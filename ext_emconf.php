@@ -11,17 +11,17 @@
 ########################################################################
 
 $EM_CONF[$_EXTKEY] = array(
-	'title' => 'Themes - Adapter to include templavoila_framework skins',
+	'title' => 'Themes - Adapter to include Wordpress.org Themes',
 	'description' => '',
 	'category' => 'fe',
 	'shy' => 0,
-	'version' => '1.0.0',
+	'version' => '0.0.1',
 	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',
 	'loadOrder' => '',
 	'module' => '',
-	'state' => 'beta',
+	'state' => 'alpha',
 	'uploadfolder' => 0,
 	'createDirs' => '',
 	'modify_tables' => '',

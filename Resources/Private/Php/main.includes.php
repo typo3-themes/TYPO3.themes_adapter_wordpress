@@ -12,3 +12,4 @@ include(t3lib_extMgm::extPath('themes_adapter_wordpress') . 'Resources/Private/P
 include(t3lib_extMgm::extPath('themes_adapter_wordpress') . 'Resources/Private/Php/wp-includes/formatting.php');
 include(t3lib_extMgm::extPath('themes_adapter_wordpress') . 'Resources/Private/Php/wp-includes/link-template.php');
 include(t3lib_extMgm::extPath('themes_adapter_wordpress') . 'Resources/Private/Php/wp-includes/general-template.php');
+include(t3lib_extMgm::extPath('themes_adapter_wordpress') . 'Resources/Private/Php/wp-includes/post.php');

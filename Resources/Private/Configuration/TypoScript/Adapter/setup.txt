@@ -30,13 +30,11 @@ page {
 				expAll = 1
 				accessKey = 1
 				NO {
-					wrapItemAndSub = <li>|</li>
-					ATagBeforeWrap = 1
-					linkWrap = <span>|</span>
+					wrapItemAndSub = <li class="page_item">|</li>
 				}
 				ACT < .NO
 				ACT {
-					ATagParams = class="open"
+					wrapItemAndSub =  = <li class="current_page_item">|</li>
 				}
 			}
 		}

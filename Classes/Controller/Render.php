@@ -26,6 +26,8 @@ class Tx_ThemesAdapterWordpress_Controller_Renderer implements t3lib_Singleton{
 
 		$themeName = $this->confEvaluated['themeName'];
 
+		if( ! defined('WP_USE_THEMES'))
+			define('WP_USE_THEMES', TRUE);
 		if ( ! defined( 'WP_CONTENT_URL' ) )
 			define( 'WP_CONTENT_URL', WP_SITEURL );
 		if ( ! defined( 'WP_CONTENT_DIR' ) )

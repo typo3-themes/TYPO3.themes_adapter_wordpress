@@ -2,7 +2,12 @@
 
 
 class mock {
+	function __construct($name) {
+		$this->name = $name;
+	}
 	function __call($name, $params) {
+		trigger_error('IGNORED CALL' . $this->name . ' . ' . $name . '-' . json_encode($params));
+		#echo '<br><pre>' . $this->name . ' . ' . $name . '-' . json_encode($params) . '</pre><br>';
 		return $this;
 	}
 	function __toString() {
@@ -10,7 +15,33 @@ class mock {
 	}
 }
 
+class WP_THEME extends mock {
 
+}
+class wpdb extends mock{
+	function prepare($query, $params) {
+		$this->query($query);
+		return $this;
+	}
+	function get_row($query, $output_type='OBJECT', $row_offset=0) {
+		switch($output_type) {
+			case 'ARRAY_A':
+			case 'ARRAY_N':
+				return array();
+			break;
+			default:
+				return new mock($this->name, $query);
+			break;
+		}
+	}
+	function select($query) {
+		#$this->__call('SELECT!!!', $query);
+		return $this->get_row($query);
+	}
+	function query($query) {
+		$this->select($query);
+	}
+}
 
 
 
@@ -20,7 +51,7 @@ function timer_stop() {
 
 
 function have_posts() {
-	return FALSE;
+	return TRUE;
 }
 
 function current_user_can($right) {
@@ -98,11 +129,9 @@ function get_option($name, $default = '') {
 }
 
 function the_post() {
+	return new mock('post');
 	$wpAdapter = t3lib_div::makeInstance('Tx_ThemesAdapterWordpress_Controller_Renderer');
 	return $wpAdapter->confEvaluated['mainColumn'];
-}
-function get_post_format() {
-	return 'page';
 }
 
 function get_default_feed() {
@@ -121,11 +150,11 @@ function get_query_var($var) {
 }
 
 function is_single(){
-	return true;
+	return TRUE;
 }
 
 function get_queried_object() {
-	return NULL;
+	return new mock('get_queried_object');
 }
 function is_category() {
 	return FALSE;
@@ -152,7 +181,7 @@ function is_404() {
 	return FALSE;
 }
 function is_singular() {
-	return FALSE;
+	return TRUE;
 }
 
 function is_day() {
@@ -169,10 +198,10 @@ function is_paged() {
 	return FALSE;
 }
 function is_home() {
-	return FALSE;
+	return TRUE;
 }
 function is_page() {
-	return FALSE;
+	return TRUE;
 }
 function is_user_logged_in() {
 	return FALSE;
@@ -185,8 +214,10 @@ function wp_list_pages() {
 	$wpAdapter = t3lib_div::makeInstance('Tx_ThemesAdapterWordpress_Controller_Renderer');
 	echo $wpAdapter->confEvaluated['menu'];
 }
-function wp_nav_menu() {
+function wp_nav_menu($options) {
+	echo '<ul class="menu">';
 	wp_list_pages();
+	echo '</ul>';
 }
 function the_ID() {
 	return 0;
@@ -196,13 +227,14 @@ function wp_list_categories() {
 }
 
 function wp_cache_get($key, $categorie) {
-	return array(
-		$key => $key . ' / ' . $categorie
-	);
+	return FALSE;
 }
 
-function wp_cache_set() {
+function wp_cache_set($key) {
 	return FALSE;
+}
+function wp_cache_add($key) {
+	return false;
 }
 
 function wp_kses_normalize_entities() {
@@ -217,25 +249,8 @@ function add_filter() {
 function register_nav_menus() {
 
 }
-function get_post_format_slugs() {
-	$slugs = array_keys( get_post_format_strings() );
-	return array_combine( $slugs, $slugs );
-}
-function get_post_format_strings() {
-	$strings = array(
-		'standard' => _x( 'Standard', 'Post format' ), // Special case. any value that evals to false will be considered standard
-		'aside'    => _x( 'Aside',    'Post format' ),
-		'chat'     => _x( 'Chat',     'Post format' ),
-		'gallery'  => _x( 'Gallery',  'Post format' ),
-		'link'     => _x( 'Link',     'Post format' ),
-		'image'    => _x( 'Image',    'Post format' ),
-		'quote'    => _x( 'Quote',    'Post format' ),
-		'status'   => _x( 'Status',   'Post format' ),
-		'video'    => _x( 'Video',    'Post format' ),
-		'audio'    => _x( 'Audio',    'Post format' ),
-	);
-	return $strings;
-}
+
+
 function is_admin() {
 	return FALSE;
 }
@@ -246,14 +261,9 @@ function set_post_thumbnail_size() {
 
 }
 function post_class() {
+	return new mock('post_class');
+}
 
-}
-function get_post() {
-	return 'POSTCONTENT';
-}
-function get_post_type_object() {
-	return new mock();
-}
 function the_title() {
 	return get_option('blog_name');
 }
@@ -269,12 +279,68 @@ function dynamic_sidebar($index = 1) {
 function has_nav_menu() {
 	return FALSE;
 }
-function wp_enqueue_style() {
-
+function wp_enqueue_style($name, $file) {
+	$GLOBALS['TSFE']->additionalHeaderData['themes-' . $name] = '
+        <link rel="stylesheet" href="'.$file.'" type="text/css" />
+        ';
 }
 function register_nav_menu() {
 
 }
 function is_active_sidebar() {
 
+}
+function wp_load_alloptions() {
+
+}
+function wp_enqueue_script($name, $file = '', $libs = NULL, $fileTime = 0) {
+	$GLOBALS['TSFE']->additionalHeaderData['script-themes-' . $name] = '
+        <script src="'.$file.'?' . $fileTime  . '" type="text/javascript" ></script>
+        ';
+}
+
+function headCallback() {
+	do_action('wp_enqueue_scripts');
+}
+add_action('wp_head', 'headCallback');
+
+function comments_open() {
+
+}
+
+function get_the_ID() {
+	return FALSE;
+}
+function the_post_thumbnail() {
+	return false;
+}
+function get_the_category_list() {
+	return false;
+}
+function get_the_tag_list() {
+	return new mock('tag_list');
+}
+function get_author_posts_url() {
+	return '';
+}
+function get_the_author_meta() {
+	return new mock('author_meta');
+}
+function get_the_author() {
+	return new mock('get_the_author');
+}
+function is_multi_author() {
+	return false;
+}
+function get_metadata() {
+	return new mock('metadata');
+}
+function get_the_title() {
+	return 'dada ich bin der title';
+}
+function the_title_attribute() {
+	return new mock('the_title_attribute');
+}
+function get_comments_number() {
+	return 0;
 }
